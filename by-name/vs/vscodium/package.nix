@@ -269,6 +269,7 @@ let
       BUILD_DATE = commitInfo.committer.date;
       BUILD_SOURCEVERSION = commitInfo.sha;
       VSCODE_FORCE_INSTALL = "1";
+      VSCODE_PUBLISH_COUNTER = "1";
       VSCODE_QUALITY = "stable";
       npm_install_command = "npm-install-script";
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "true";
@@ -339,6 +340,9 @@ let
       mv manifest.json.tmp resources/server/manifest.json
 
       substituteInPlace package.json --replace-fail 'Microsoft Corporation' 'VSCodium'
+      # prepare_vscode.sh sets the package version to the VSCodium release.
+      jq --arg version "${vscodiumTag}" '.version = $version' package.json > package.json.tmp
+      mv package.json.tmp package.json
 
       # The bundle's NSHumanReadableCopyright and the win32 installer metadata
       # otherwise keep Microsoft's name; prepare_vscode.sh edits the same file.
@@ -347,12 +351,6 @@ let
       # The copyright line is "Copyright (C) <year> Microsoft", which the
       # company-name replacement above does not reach.
       sed -i -E 's|([0-9]) Microsoft|\1 VSCodium|g' build/lib/electron.ts
-
-      # Like undo_telemetry.sh: point Microsoft's telemetry endpoints at a black
-      # hole instead of shipping code that reports to them.
-      while IFS= read -r telemetry_file; do
-        sed -i -E 's|//[^/]+\.data\.microsoft\.com|//0\.0\.0\.0|g' "$telemetry_file"
-      done < <(grep -rl --exclude-dir=.git -E '\.data\.microsoft\.com' . || true)
 
     '';
 
@@ -454,10 +452,22 @@ let
 
       patchShebangs node_modules build/node_modules || true
 
+      # undo_telemetry.sh, at the point upstream runs it: after the dependency
+      # install, over the whole tree, so vendored code is covered too.
+      while IFS= read -r telemetry_file; do
+        sed -i -E 's|//[^/]+\.data\.microsoft\.com|//0\.0\.0\.0|g' "$telemetry_file"
+      done < <(${ripgrep}/bin/rg --no-ignore --hidden -l '\.data\.microsoft\.com' . || true)
+
       if [ -f node_modules/@vscode/gulp-electron/src/download.js ]; then
         substituteInPlace node_modules/@vscode/gulp-electron/src/download.js \
           --replace-fail 'let downloadOpts = {' 'let downloadOpts = { unsafelyDisableChecksums: true,' || true
       fi
+
+      # build.sh: compile in a prepack step, then run the platform packaging.
+      node --run gulp -- vscode-min-prepack
+
+      # Remove the Windows-only debugger binaries from the mac/linux package.
+      rm -f .build/extensions/ms-vscode.js-debug/src/win32-app-container-tokens.*.node
 
       # Group Policy / MDM definitions; the packaging below picks them up from
       # .build/policies/${platform}.
@@ -472,7 +482,7 @@ let
       cp ${nodejs}/bin/node "$node_seed/node"
       chmod +x "$node_seed/node"
 
-      node --run gulp -- vscode-${platform}-${arch}-min
+      node --run gulp -- vscode-${platform}-${arch}-min-packing
 
       # Remote server and its web variant, packaged from the same sources.
       node --run gulp -- vscode-reh-${platform}-${arch}-min-packing
