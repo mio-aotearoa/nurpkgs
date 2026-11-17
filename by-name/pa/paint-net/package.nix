@@ -92,7 +92,6 @@ mkWindowsAppNoCC rec {
     mainProgram = pname;
     homepage = "https://www.getpaint.net/";
     description = "Image and photo editing software";
-    license = licenses.freeware;
     maintainers = [ "maydayv7" ];
     platforms = [
       "x86_64-linux"
