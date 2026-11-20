@@ -3,13 +3,14 @@
   makeWrapper,
   symlinkJoin,
   gt3-revisited-unwrapped,
-  # The disc image `gt3r` opens. Set one at build time and `gt3r` launches it
-  # without an argument:
-  #   gt3-revisited.override { image = /nix/store/…-Gran_Turismo_3_A-Spec__Japan_.iso; }
-  # That makes the image an input of the package, so it is kept from garbage
-  # collection; it has to be in the store already, because Nix refuses to add a
-  # file whose name contains spaces or parentheses.
-  image ? null,
+  fetchurl,
+  image ? (
+    fetchurl {
+      name = "Gran_Turismo_3_A-Spec__Japan_.iso";
+      url = "https://dn721608.ca.archive.org/0/items/gran-turismo-3-a-spec-japan/Gran%20Turismo%203%20A-Spec%20%28Japan%29.iso";
+      hash = "sha256-OfF+VV4OtLW08hHLUT98/F4PLPEawuyaPsUVnep2wzA=";
+    }
+  ),
 }:
 
 symlinkJoin {
