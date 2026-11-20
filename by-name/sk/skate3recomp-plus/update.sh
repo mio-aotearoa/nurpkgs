@@ -14,7 +14,20 @@ root=$(git rev-parse --show-toplevel)
 cd "$root"
 dir=by-name/sk/skate3recomp-plus
 
-nix-update skate3recomp-plus --version-regex 'v(.*)'
+# The tags are v0.2, v0.2a ... v0.2e, which nix-update's version comparison
+# cannot order (it reads 0.2e as older than 0.2). Take the newest release
+# from GitHub's feed, which is ordered by release date, and pin that.
+version=$(python3 - <<'PY'
+import re, urllib.request
+
+url = "https://github.com/dougieprishpreed/skate3recomp-plus/releases.atom"
+data = urllib.request.urlopen(url, timeout=60).read().decode()
+entry = data.split("<entry>", 1)[1]
+print(re.search(r"<title>\s*v?([^<]+?)\s*</title>", entry).group(1))
+PY
+)
+
+nix-update skate3recomp-plus --version="$version"
 
 system=$(nix eval --raw --impure --expr builtins.currentSystem)
 sdk=".#legacyPackages.$system.skate3recomp-plus.passthru.sdk"

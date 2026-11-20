@@ -28,13 +28,13 @@
 }:
 
 let
-  version = "0.2";
+  version = "0.2e";
 
   src = fetchFromGitHub {
     owner = "dougieprishpreed";
     repo = "skate3recomp-plus";
     tag = "v${version}";
-    hash = "sha256-bTkiTDTZzHpeeHgmqi6SECQm/PGGJZPWIkHmy8JatiM=";
+    hash = "sha256-CfHrcWKUlOEuBwZwCSB16xHu4erSZ6b9/+sHyg0G6wY=";
   };
 
   # The fork of rexglue the project builds against, with its patch and ImGui
