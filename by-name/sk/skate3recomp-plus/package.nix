@@ -28,13 +28,13 @@
 }:
 
 let
-  version = "0.2e";
+  version = "0.2";
 
   src = fetchFromGitHub {
     owner = "dougieprishpreed";
     repo = "skate3recomp-plus";
     tag = "v${version}";
-    hash = "sha256-CfHrcWKUlOEuBwZwCSB16xHu4erSZ6b9/+sHyg0G6wY=";
+    hash = "sha256-bTkiTDTZzHpeeHgmqi6SECQm/PGGJZPWIkHmy8JatiM=";
   };
 
   # The fork of rexglue the project builds against, with its patch and ImGui
@@ -50,7 +50,6 @@ let
       findutils
       ;
     gameSrc = src;
-    rev = "7eb0faf7787f5e01333c228b8e3f03c32f7295ea";
   };
 
   python = python3.withPackages (ps: [ ps.numpy ]);
@@ -138,6 +137,11 @@ stdenv.mkDerivation (finalAttrs: {
     [ -f "$bin_dir/settings.toml" ] && install -Dm644 "$bin_dir/settings.toml" "$out/bin/settings.toml"
     runHook postInstall
   '';
+
+  passthru = {
+    inherit sdk;
+    updateScript = ./update.sh;
+  };
 
   meta = {
     description = "Enhanced native Skate 3 recompilation (needs your own disc)";
