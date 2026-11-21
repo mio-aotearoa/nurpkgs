@@ -6,6 +6,7 @@
   pango,
   tlottie,
   wallet-engine,
+  swift,
   writeShellApplication,
   nix-update,
 }:
@@ -31,6 +32,17 @@
         tlottie
         wallet-engine
       ];
+
+      # nixpkgs' swift 6.4.0 chain does not build on aarch64-darwin at this
+      # pin: swift-collections 1.7.6 fails in its own postInstall because its
+      # dylibs were linked without header padding. Build the macOS app without
+      # the Swift 6 on-device translation provider instead of pulling in a
+      # toolchain that cannot be built; it is the only Swift code tdesktop
+      # compiles on macOS (Telegram/lib_translate).
+      cmakeFlags = previousAttrs.cmakeFlags ++ [
+        (lib.cmakeBool "DESKTOP_APP_DISABLE_SWIFT6" true)
+      ];
+      nativeBuildInputs = lib.remove swift previousAttrs.nativeBuildInputs;
 
       postPatch = (previousAttrs.postPatch or "") + ''
         pushd cmake
