@@ -15,14 +15,14 @@
   unwrapped = telegram-desktop.unwrapped.overrideAttrs (
     finalAttrs: previousAttrs: {
       pname = "forkgram-desktop-unwrapped";
-      version = "7.4.4";
+      version = "7.4.5";
 
       src = fetchFromGitHub {
         owner = "forkgram";
         repo = "tdesktop";
         tag = "v${finalAttrs.version}";
         fetchSubmodules = true;
-        hash = "sha256-jLmO8/RdUOUl3RLXCBSqo7P7BVoW6iwDjZ6DcvBZ8vM=";
+        hash = "sha256-SlWUhMKRuvF7Dp6pQvMFml55+dXVb2H1qZzCP3Eg1Ak=";
       };
 
       buildInputs = previousAttrs.buildInputs ++ [

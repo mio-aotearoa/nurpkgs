@@ -32,13 +32,13 @@ let
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "horizon";
-  version = "0.2.97";
+  version = "2026.10.23";
 
   src = fetchFromGitHub {
     owner = "horizon-rust";
     repo = "horizon";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-6oyG7R1Yfh4WvOBxKh1mHrMi9Kho5Ptic6nbDYPdb28=";
+    hash = "sha256-u0lCVbK23RrNUzUj3xam41m1xlqjEngupkm/Zqmuw94=";
   };
 
   # The lockfile is the upstream one for this tag: every crate in it carries
