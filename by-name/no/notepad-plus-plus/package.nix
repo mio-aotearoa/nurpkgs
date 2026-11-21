@@ -92,7 +92,7 @@ let
     icoIndex = 2;
     src = fetchurl {
       url = "https://notepad-plus-plus.org/favicon.ico";
-      sha256 = "1av2m6m665ccfngnzqnbsnv2aky907p2c6ggvfxrwbp70szgj9vi";
+      hash = "sha256-cSf5vgbnLp672+8ZJu4ByU8lttXL4m+fdYwVY6qpYqs=";
     };
   };
 
