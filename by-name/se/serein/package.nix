@@ -7,6 +7,9 @@
   cmake,
   git,
   makeWrapper,
+  writeShellApplication,
+  nix-update,
+  python3,
   swiftPackages,
   apple-sdk_15,
   wrapGAppsHook4,
@@ -163,6 +166,18 @@ rustPlatform.buildRustPackage (finalAttrs: {
   dontUseSwiftpmCheck = true;
   dontUseSwiftpmInstall = true;
   doCheck = false;
+
+  passthru.updateScript = writeShellApplication {
+    name = "update-serein";
+    runtimeInputs = [
+      python3
+      nix-update
+    ];
+    text = ''
+      export UPDATE_NIX_ATTR_PATH="serein"
+      exec python3 ${./update.py} "$@"
+    '';
+  };
 
   # discord-voice links against the Swift runtime that ships in the SDK.
   preBuild = lib.optionalString isDarwin ''

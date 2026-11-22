@@ -3,6 +3,8 @@
   stdenv,
   fetchurl,
   makeWrapper,
+  nix-update-script,
+  writeShellApplication,
   python3,
 }:
 
@@ -97,6 +99,14 @@ stdenv.mkDerivation rec {
   '';
 
   doCheck = false;
+
+  passthru.updateScript = writeShellApplication {
+    name = "update-splash";
+    text = ''
+      export UPDATE_NIX_ATTR_PATH="splash"
+      exec ${lib.escapeShellArgs (nix-update-script { })} "$@"
+    '';
+  };
 
   meta = {
     description = "Local inference engine for Apple silicon";

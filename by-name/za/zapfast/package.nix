@@ -7,6 +7,8 @@
   cmake,
   perl,
   makeWrapper,
+  nix-update-script,
+  writeShellApplication,
   openssl,
   sqlcipher,
   dejavu_fonts,
@@ -63,6 +65,21 @@ rustPlatform.buildRustPackage rec {
     "--skip"
     "transport::tests::dials_the_next_address_when_the_first_refuses"
   ];
+
+  passthru.updateScript = writeShellApplication {
+    name = "update-zapfast";
+    text = ''
+      export UPDATE_NIX_ATTR_PATH="zapfast"
+      exec ${
+        lib.escapeShellArgs (nix-update-script {
+          extraArgs = [
+            "--version-regex"
+            "v(.*)"
+          ];
+        })
+      } "$@"
+    '';
+  };
 
   postFixup = ''
     rcodesign sign \

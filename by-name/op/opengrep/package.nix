@@ -3,6 +3,8 @@
   stdenv,
   fetchgit,
   fetchFromGitHub,
+  nix-update-script,
+  writeShellApplication,
   nixpkgs_pkgs,
   pcre2,
   gmp,
@@ -104,9 +106,10 @@ buildDunePackage rec {
 
   # The language grammars (languages/*/tree-sitter/*) and
   # libs/ocaml-tree-sitter-core are git submodules; dune compiles all of them.
-  src = fetchgit {
-    url = "https://github.com/opengrep/opengrep";
-    rev = "526deafe6f0519c272bbee316fea8df26dd85dfa";
+  src = fetchFromGitHub {
+    owner = "opengrep";
+    repo = "opengrep";
+    tag = "v${version}";
     fetchSubmodules = true;
     hash = "sha256-R45BfN8HLowMnxmy8I0GAlC6HHPkjj1x+0WMFJyH3Qs=";
   };
@@ -203,6 +206,21 @@ buildDunePackage rec {
   outputs = [ "out" ];
 
   doCheck = false;
+
+  passthru.updateScript = writeShellApplication {
+    name = "update-opengrep";
+    text = ''
+      export UPDATE_NIX_ATTR_PATH="opengrep"
+      exec ${
+        lib.escapeShellArgs (nix-update-script {
+          extraArgs = [
+            "--version-regex"
+            "v(.*)"
+          ];
+        })
+      } "$@"
+    '';
+  };
 
   meta = {
     description = "Static analysis engine to find security issues in code";
