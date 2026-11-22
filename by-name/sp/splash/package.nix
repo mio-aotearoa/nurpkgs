@@ -57,9 +57,11 @@ stdenv.mkDerivation rec {
   pname = "splash";
   version = "1.7.0";
 
-  # The engine's kernels target Metal 4.0, which only Xcode's `metal` compiler
-  # emits; there is no free Metal compiler and the build sandbox cannot reach
-  # the host toolchain. Install upstream's official arm64/macOS 26 build
+  # Upstream's Makefile builds with `xcrun -sdk macosx metal` and targets
+  # MACOS_MIN_VERSION 26.4, which the engine also enforces at startup. This
+  # machine's SDK is 26.2, so a from-source engine would land below upstream's
+  # tested floor (and the sandbox would additionally need `__noChroot` to
+  # reach xcrun at all). Install upstream's official arm64/macOS 26 build
   # instead of compiling the engine. Its bundled Python runtime is unused: the
   # launcher is wrapped to run under pythonEnv below.
   src = fetchurl {
