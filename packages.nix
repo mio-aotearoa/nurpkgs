@@ -249,10 +249,6 @@ exportedByName
       ];
     });
 
-  davinci-resolve-studio2033 = davinci-resolve2033.override {
-    studioVariant = true;
-  };
-
   # Wine app variants (bases live in by-name; mkWindowsAppNoCC is no-IFD).
   # https://github.com/NixOS/nixpkgs/issues/10165
   # https://discourse.nixos.org/t/what-is-your-approach-to-packaging-wine-applications-with-nix-derivations/12799/1
