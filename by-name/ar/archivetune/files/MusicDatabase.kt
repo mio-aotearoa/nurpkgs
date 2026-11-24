@@ -40,6 +40,7 @@ import kotlinx.coroutines.withTimeout
         PlaylistTagMap::class,
         LibraryTopMixEntity::class,
         LibraryTopMixSongMap::class,
+        LyricsSyncOffsetEntity::class,
     ],
     views = [
         LibrarySongArtistMap::class,
@@ -47,7 +48,7 @@ import kotlinx.coroutines.withTimeout
         SortedSongAlbumMap::class,
         PlaylistSongMapPreview::class,
     ],
-    version = 37,
+    version = 41,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -127,7 +128,7 @@ class MusicDatabase(
     }
 
     class WritableDatabaseShim {
-        val version: Int = 37
+        val version: Int = 41
     }
 
     val openHelper: OpenHelperShim get() = OpenHelperShim()
