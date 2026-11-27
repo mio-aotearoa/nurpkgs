@@ -196,9 +196,14 @@ The harness works; our images do not start under it.
 
 ### 6. Housekeeping once the above lands
 
-- [ ] Update scripts for `zfs-uefi` (and the pin of `zfs-efi` inside
-      `quibble_patched`) so a bump moves revision, hash and README reference
-      together; `./check_updates.py` must see them.
+- [x] Update scripts: `zfs-uefi` and `quibble` each carry their own
+      (`nix-update --version=branch`, `0-unstable-<date>`, plus quibble's CMake
+      version prefix), and `quibble_patched` now exposes
+      `passthru.updateScript`, which runs both in order because the variant has
+      no pins of its own - its loader follows `quibble` and its `zfs.efi`
+      follows `zfs-uefi`. `check_updates.py` reports the two
+      `fetchFromGitHub` pins; `quibble_patched` carries no `src`, so it is
+      deliberately not listed there.
 - [x] Documentation for both variants: `meta.longDescription` now states the
       install layout (`freeldr.ini` and `font.ttf` beside the loader,
       `drivers/` next to them) and, for `quibble_patched`, that it tracks the
