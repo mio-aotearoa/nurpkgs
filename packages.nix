@@ -6,6 +6,8 @@
     config.android_sdk.accept_license = true;
   },
   no-ifd ? true,
+  claudeDesktopUpstream ? null,
+  claudeDesktopFhsUpstream ? null,
   claudeDesktopSrc ? null,
   kytyps5NixpkgsSrc ? null,
 }:
@@ -31,8 +33,10 @@ let
                 (name: {
                   inherit name;
                   value = self.callPackage (subdir + "/${name}/package.nix") (
-                    if dir == "cl" && (name == "claude-desktop" || name == "claude-desktop-fhs") then
-                      { inherit claudeDesktopSrc; }
+                    if dir == "cl" && name == "claude-desktop" then
+                      { inherit claudeDesktopUpstream claudeDesktopSrc; }
+                    else if dir == "cl" && name == "claude-desktop-fhs" then
+                      { inherit claudeDesktopFhsUpstream claudeDesktopSrc; }
                     else if dir == "ky" && name == "kytyps5" then
                       { inherit kytyps5NixpkgsSrc; }
                     else
@@ -53,6 +57,8 @@ let
     flattened
     // {
       inherit
+        claudeDesktopUpstream
+        claudeDesktopFhsUpstream
         claudeDesktopSrc
         kytyps5NixpkgsSrc
         ;

@@ -20,6 +20,8 @@ else
       config.android_sdk.accept_license = true;
     },
     no-ifd ? true,
+    claudeDesktopUpstream ? null,
+    claudeDesktopFhsUpstream ? null,
     claudeDesktopSrc ? null,
     kytyps5NixpkgsSrc ? null,
   }:
@@ -33,7 +35,16 @@ let
     homeModules = import ./home-modules; # Home Manager modules
     overlays = import ./overlays; # nixpkgs overlays
   }
-  // import ./packages.nix { inherit pkgs no-ifd claudeDesktopSrc kytyps5NixpkgsSrc; }
+  // import ./packages.nix {
+    inherit
+      pkgs
+      no-ifd
+      claudeDesktopUpstream
+      claudeDesktopFhsUpstream
+      claudeDesktopSrc
+      kytyps5NixpkgsSrc
+      ;
+  }
   // rec {
     aria2 = v3override (
       pkgs.aria2.overrideAttrs (old: {
@@ -128,7 +139,7 @@ let
       let
         self = import ./default.nix {
           inherit pkgs;
-          inherit claudeDesktopSrc kytyps5NixpkgsSrc;
+          inherit claudeDesktopUpstream claudeDesktopFhsUpstream claudeDesktopSrc kytyps5NixpkgsSrc;
           no-ifd = false;
         };
       in

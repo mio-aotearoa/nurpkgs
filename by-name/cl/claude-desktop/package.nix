@@ -1,5 +1,6 @@
 {
   callPackage,
+  claudeDesktopUpstream ? null,
   claudeDesktopSrc,
   writeShellApplication,
   coreutils,
@@ -22,10 +23,15 @@ let
       exec ${./update.sh} "$@"
     '';
   };
-  pkg = callPackage (claudeDesktopSrc + "/nix/claude-desktop.nix") { };
 in
-pkg.overrideAttrs (prevAttrs: {
-  passthru = (prevAttrs.passthru or { }) // {
-    inherit updateScript;
-  };
-})
+(
+  if claudeDesktopUpstream != null then
+    claudeDesktopUpstream
+  else
+    callPackage (claudeDesktopSrc + "/nix/claude-desktop.nix") { }
+).overrideAttrs
+  (prevAttrs: {
+    passthru = (prevAttrs.passthru or { }) // {
+      inherit updateScript;
+    };
+  })
