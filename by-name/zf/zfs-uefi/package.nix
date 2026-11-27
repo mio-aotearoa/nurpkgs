@@ -62,8 +62,9 @@ mingw.stdenv.mkDerivation {
   postPatch = ''
     cp ${./crypto}/aesgcm.c ${./crypto}/aesgcm.h \
       ${./crypto}/sha512.c ${./crypto}/sha512.h ${./crypto}/sha512_consts.h \
+      ${./crypto}/sha1.c ${./crypto}/sha1.h \
       src/engine/
-    sed -i 's#    src/engine/nvlist.c#    src/engine/aesgcm.c src/engine/sha512.c src/engine/nvlist.c#' \
+    sed -i 's#    src/engine/nvlist.c#    src/engine/aesgcm.c src/engine/sha512.c src/engine/sha1.c src/engine/nvlist.c#' \
       CMakeLists.txt
   '';
 
