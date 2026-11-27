@@ -199,3 +199,38 @@ The harness works; our images do not start under it.
       `quibble_patched` about which upstream branch its patches came from.
 - [ ] Re-check that `nix build .#quibble` and `nix build .#quibble_patched`
       still pass after any `print.cpp`/toolchain churn upstream.
+
+<!-- qemu-crash:start -->
+### QEMU crash analysis (2026-11-27)
+
+The images *do* start, and OVMF's exception handler catches them. `-serial file:` is
+required to see firmware output at all (`-display none` alone sends `ConOut` to the
+invisible graphics console).
+
+```
+!!!! X64 Exception Type - 06(#UD - Invalid Opcode)  CPU Apic ID - 00000000 !!!!
+RIP  - 000000007DD4A00C   (second run: 000000007DD4900C)
+```
+
+Both RIPs are `load base + 0xC`, i.e. inside the DOS header, where mingw's stub has
+`ff ff` — an invalid opcode. The file's own `AddressOfEntryPoint` is `0x14210`
+(`SizeOfImage 0x179000`) and disassembly there is `efi_main`'s prologue, so the header
+in the file is right; EDK2 jumps to `0xC` anyway. Instrumenting `efi_main` with direct
+COM1 `outb` markers (bypassing the firmware console) produces **no marker at all**, so
+its body never executes.
+
+Control in the same harness: upstream's released `quibble.efi` boots to the quibble UI
+(1280x800, 5.5% non-black) with no exception.
+
+Ruled out as the cause (each variant still crashes the same way):
+
+- stripping — a `dontStrip = true` build crashes identically;
+- `-Wl,--disable-runtime-pseudo-reloc` — variant without the flag crashes;
+- the freestanding CRT — a `-static` (upstream's own flags) variant crashes;
+- `freeldr.ini` / `font.ttf` — upstream's own shipped files were used.
+
+Next: load the image from OVMF's internal shell (`load fs0:\EFI\BOOT\BOOTX64.EFI`) for
+the exact status, compare `SizeOfOptionalHeader`/`NumberOfRvaAndSizes`/data directories
+against the release binary, and try `-Wl,--image-base,0` or an older binutils.
+
+<!-- qemu-crash:end -->
