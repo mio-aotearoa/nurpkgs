@@ -239,10 +239,16 @@ against the release binary, and try `-Wl,--image-base,0` or an older binutils.
 ### PE layout comparison (ours vs upstream release)
 
 ```
-Traceback (most recent call last):
-  File "<stdin>", line 46, in <module>
-  File "<stdin>", line 33, in parse
-struct.error: unpack_from requires a buffer of at least 1843648 bytes for unpacking 2 bytes at offset 1843646 (actual buffer size is 1843647)
+--- quibble.efi (/nix/store/fy1q6zif9yyvfmvl5c2cpfcxkmyjx1sg-quibble-x86_64-w64-mingw32-20230328-unstable-2024-06-23/share/quibble/quibble.efi)
+  entry=0x14210 sizeOfHeaders=0x400 sizeOfImage=0x179000 nrva=16
+  dirs: 0@0x169000+0xd957, 1@0x177000+0x18, 3@0x159000+0x6114, 5@0x178000+0xce4
+  sections: .text@0x1000+0x10ee00, .data@0x110000+0x30800, .rdata@0x141000+0x200, .rodata@0x142000+0x16200, .pdata@0x159000+0x6200, .xdata@0x160000+0x7400, .bss@0x168000+0x680, .edata@0x169000+0xda00, .idata@0x177000+0x200, .reloc@0x178000+0xe00
+  relocs: 1566, rva range 0x110000..0x140280, outside headers/image: 0 []
+--- quibble.efi (/tmp/qv/upstream/amd64/quibble.efi)
+  entry=0xf0c7 sizeOfHeaders=0x400 sizeOfImage=0x100000 nrva=16
+  dirs: 0@0xc3000+0x3ad0c, 1@0xfe000+0x18, 3@0xb2000+0x79f8, 5@0xff000+0x5e8
+  sections: .text@0x1000+0xa3e00, .data@0xa5000+0x200, .rdata@0xa6000+0xbc00, .pdata@0xb2000+0x7a00, .xdata@0xba000+0x7c00, .bss@0xc2000+0x420, .edata@0xc3000+0x3ae00, .idata@0xfe000+0x200, .reloc@0xff000+0x600
+  relocs: 724, rva range 0xa7160..0xb1500, outside headers/image: 0 []
 ```
 
 <!-- pe-layout:end -->
