@@ -208,8 +208,13 @@ The harness works; our images do not start under it.
       install layout (`freeldr.ini` and `font.ttf` beside the loader,
       `drivers/` next to them) and, for `quibble_patched`, that it tracks the
       same upstream revision as `quibble` with only local runtime/ZFS patches.
-- [ ] Re-check that `nix build .#quibble` and `nix build .#quibble_patched`
-      still pass after any `print.cpp`/toolchain churn upstream.
+- [x] Re-check that `nix build .#quibble` and `nix build .#quibble_patched`
+      still pass after any `print.cpp`/toolchain churn upstream. Verified again
+      2026-11-27 with a real run of the update scripts: `update-zfs-uefi` and
+      `update-quibble` both fetched upstream and reported the pins already
+      current (`0-unstable-2026-10-29`, `20230328-unstable-2024-06-23`), leaving
+      the tree untouched; `update-quibble_patched` chained both the same way.
+      `nix build` for all three packages and both VM checks still passes.
 
 <!-- qemu-crash:start -->
 ### QEMU crash analysis (2026-11-27)
