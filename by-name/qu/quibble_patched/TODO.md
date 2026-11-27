@@ -283,3 +283,37 @@ Next: rebuild the COM1-marker instrumentation through `overrideAttrs` (entry sta
 `0x14210`), boot it, and read the `qstat` markers to see how far `efi_main` gets.
 
 <!-- qemu-status:end -->
+
+<!-- markers:start -->
+### Root cause of the bogus #UD: a broken `extern "C"` in my instrumentation
+
+In `/tmp` scratch patches I inserted the `qport`/`qstat` helpers between a bare
+`extern "C"` line and `efi_main`. A linkage specification without a block applies only to
+the *next* declaration, so `efi_main` silently became C++-mangled, the linker could not
+find it, and it defaulted `AddressOfEntryPoint` to **0**. That is the entire "crash at
+image base + 0xC": the firmware was executing the DOS header.
+
+With `extern "C"` restored on `efi_main` (entry `0x142c0`) the same build runs, and the
+COM1 markers show `efi_main` succeeding all the way through the stack switch:
+
+```
+BdsDxe: loading Boot0002
+BdsDxe: starting Boot0002
+S=00000000   (entered efi_main)
+c=00000000   (ConIn->Reset)
+f=00000000   (load_font)
+g=00000000   (set_graphics_mode)
+i=00000000   (info_register)
+r=00000000   (reg_register)
+p=00000000   (pe_register)
+d=00000000   (load_efi_drivers)
+b=00000000   (look_for_block_devices)
+k=00000000   (change_stack)
+R=00000000   (continuation after the stack switch)
+```
+
+After that point quibble returns and firmware shows the boot menu; nothing is drawn and
+no exception is raised. So the remaining question is narrow: what runs after
+`change_stack` and why it bails out.
+
+<!-- markers:end -->
