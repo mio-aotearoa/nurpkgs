@@ -201,6 +201,14 @@ The harness works; our images do not start under it.
       OpenSSL-generated vectors (empty plaintext/AAD, one block, 60 bytes with
       odd-length AAD, and the 96-byte/24-byte-AAD wrapped-key shape), with
       AES-256 itself also checked against FIPS-197 via `openssl enc`.
+- [x] SHA-512 and HMAC-SHA512 (`crypto/sha512.c`), needed because an encrypted
+      dataset's non-leaf blocks are authenticated with SHA512-HMAC-256 (GCM
+      only covers leaf data).  Round constants are generated from OpenZFS's
+      `sha2_generic.c` so they match what wrote the pool; the KAT compares
+      against Python's hashlib/hmac.  Found and fixed a real bug on the way:
+      SHA-512's length field is 128 bits, so padding must zero through offset
+      120 before writing the low 64 bits - filling only to 112 left bytes
+      112..119 uninitialised and the digest depended on the stack.
 - [ ] Wiring, in order: read `DD_FIELD_CRYPTO_KEY_OBJ` from the zapified DSL
       dir, unwrap the 96-byte key blob with the 32-byte raw keyfile (version-1
       AAD is LE guid, crypt, version = 24 bytes), decode salt/IV from
