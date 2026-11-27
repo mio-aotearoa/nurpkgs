@@ -199,8 +199,10 @@ The harness works; our images do not start under it.
 - [ ] Update scripts for `zfs-uefi` (and the pin of `zfs-efi` inside
       `quibble_patched`) so a bump moves revision, hash and README reference
       together; `./check_updates.py` must see them.
-- [ ] README/description updates for both variants, and a note in
-      `quibble_patched` about which upstream branch its patches came from.
+- [x] Documentation for both variants: `meta.longDescription` now states the
+      install layout (`freeldr.ini` and `font.ttf` beside the loader,
+      `drivers/` next to them) and, for `quibble_patched`, that it tracks the
+      same upstream revision as `quibble` with only local runtime/ZFS patches.
 - [ ] Re-check that `nix build .#quibble` and `nix build .#quibble_patched`
       still pass after any `print.cpp`/toolchain churn upstream.
 
