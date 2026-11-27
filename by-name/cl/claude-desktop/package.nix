@@ -1,7 +1,6 @@
 {
   callPackage,
-  claudeDesktopUpstream ? null,
-  claudeDesktopSrc,
+  inputs,
   writeShellApplication,
   coreutils,
   git,
@@ -25,10 +24,10 @@ let
   };
 in
 (
-  if claudeDesktopUpstream != null then
-    claudeDesktopUpstream
+  if inputs.claudeDesktopUpstream != null then
+    inputs.claudeDesktopUpstream
   else
-    callPackage (claudeDesktopSrc + "/nix/claude-desktop.nix") { }
+    callPackage (inputs.claudeDesktopSrc + "/nix/claude-desktop.nix") { }
 ).overrideAttrs
   (prevAttrs: {
     passthru = (prevAttrs.passthru or { }) // {

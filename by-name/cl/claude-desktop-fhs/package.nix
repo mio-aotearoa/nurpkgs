@@ -1,15 +1,14 @@
 {
   callPackage,
-  claudeDesktopFhsUpstream ? null,
-  claudeDesktopSrc,
+  inputs,
   claude-desktop,
 }:
 
 (
-  if claudeDesktopFhsUpstream != null then
-    claudeDesktopFhsUpstream
+  if inputs.claudeDesktopFhsUpstream != null then
+    inputs.claudeDesktopFhsUpstream
   else
-    callPackage (claudeDesktopSrc + "/nix/fhs.nix") {
+    callPackage (inputs.claudeDesktopSrc + "/nix/fhs.nix") {
       inherit claude-desktop;
     }
 ).overrideAttrs

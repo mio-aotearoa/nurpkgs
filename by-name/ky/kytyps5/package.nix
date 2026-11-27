@@ -4,7 +4,7 @@
   fetchFromGitHub,
   fetchurl,
   fetchzip,
-  kytyps5NixpkgsSrc,
+  inputs,
   applyPatches,
   runCommand,
   cmake,
@@ -311,13 +311,13 @@ in
 if stdenv.hostPlatform.isDarwin && stdenv.hostPlatform.system != "x86_64-darwin" then
   # A native aarch64-darwin build would be an emulator upstream does not
   # support, so offer the x86_64-darwin derivation instead.
-  (import kytyps5NixpkgsSrc {
+  (import inputs.kytyps5NixpkgsSrc {
     system = "x86_64-darwin";
     config.allowUnfree = true;
     config.android_sdk.accept_license = true;
   }).callPackage
     ./package.nix
-    { inherit kytyps5NixpkgsSrc; }
+    { inherit inputs; }
 else
   stdenv.mkDerivation {
     pname = "kytyps5";

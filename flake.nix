@@ -51,11 +51,13 @@
               "python-2.7.18"
             ];
           };
-          claudeDesktopUpstream = (claude-desktop-src.packages.${system} or { }).claude-desktop or null;
-          claudeDesktopFhsUpstream =
-            (claude-desktop-src.packages.${system} or { }).claude-desktop-fhs or null;
-          claudeDesktopSrc = claude-desktop-src.outPath;
-          kytyps5NixpkgsSrc = kytyps5-nixpkgs.outPath;
+          inputs = {
+            claudeDesktopUpstream = (claude-desktop-src.packages.${system} or { }).claude-desktop or null;
+            claudeDesktopFhsUpstream =
+              (claude-desktop-src.packages.${system} or { }).claude-desktop-fhs or null;
+            claudeDesktopSrc = claude-desktop-src.outPath;
+            kytyps5NixpkgsSrc = kytyps5-nixpkgs.outPath;
+          };
           no-ifd = false;
         }
       );
@@ -109,8 +111,10 @@
               config.cudaSupport = true;
               inherit system;
             };
-            claudeDesktopSrc = claude-desktop-src.outPath;
-            kytyps5NixpkgsSrc = kytyps5-nixpkgs.outPath;
+            inputs = {
+              claudeDesktopSrc = claude-desktop-src.outPath;
+              kytyps5NixpkgsSrc = kytyps5-nixpkgs.outPath;
+            };
           };
         in
         ppp.cached-set

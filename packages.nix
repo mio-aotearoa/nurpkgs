@@ -6,10 +6,7 @@
     config.android_sdk.accept_license = true;
   },
   no-ifd ? true,
-  claudeDesktopUpstream ? null,
-  claudeDesktopFhsUpstream ? null,
-  claudeDesktopSrc ? null,
-  kytyps5NixpkgsSrc ? null,
+  inputs ? { },
 }:
 with (import ./private.nix { inherit pkgs; });
 let
@@ -30,19 +27,21 @@ let
             in
             builtins.listToAttrs (
               map
-                (name: {
-                  inherit name;
-                  value = self.callPackage (subdir + "/${name}/package.nix") (
-                    if dir == "cl" && name == "claude-desktop" then
-                      { inherit claudeDesktopUpstream claudeDesktopSrc; }
-                    else if dir == "cl" && name == "claude-desktop-fhs" then
-                      { inherit claudeDesktopFhsUpstream claudeDesktopSrc; }
-                    else if dir == "ky" && name == "kytyps5" then
-                      { inherit kytyps5NixpkgsSrc; }
-                    else
-                      { }
-                  );
-                })
+                (
+                  name:
+                  let
+                    packagePath = subdir + "/${name}/package.nix";
+                    packageArgs =
+                      if builtins.hasAttr "inputs" (builtins.functionArgs (import packagePath)) then
+                        { inherit inputs; }
+                      else
+                        { };
+                  in
+                  {
+                    inherit name;
+                    value = self.callPackage packagePath packageArgs;
+                  }
+                )
                 (
                   builtins.filter (name: (builtins.readDir subdir).${name} == "directory") (
                     builtins.attrNames (builtins.readDir subdir)
@@ -56,12 +55,6 @@ let
     in
     flattened
     // {
-      inherit
-        claudeDesktopUpstream
-        claudeDesktopFhsUpstream
-        claudeDesktopSrc
-        kytyps5NixpkgsSrc
-        ;
       nixpkgs_pkgs = pkgs;
       mkCutefishDerivation = self.callPackage ./pkgs/desktops/cutefish/mk.nix { };
       ocamlPackages =
