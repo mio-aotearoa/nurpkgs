@@ -66,10 +66,10 @@ mingw.stdenv.mkDerivation {
 
   patches = [ ./nix.patch ];
 
-  # Upstream's own preset, with the freestanding link flags added.  The only
-  # libraries on the link line are libgcc and the runtime archive below.
+  # Upstream's own preset; the freestanding link flags and the runtime archive
+  # hook are part of nix.patch, so the toolchain file stays upstream's.
   cmakeFlags = [
-    "-DCMAKE_TOOLCHAIN_FILE=${./toolchain.cmake}"
+    "-DCMAKE_TOOLCHAIN_FILE=../mingw-amd64.cmake"
     "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
     "-DQUIBBLE_RT_ARCHIVE=${runtime}/lib/libquibble-rt.a"
   ];
