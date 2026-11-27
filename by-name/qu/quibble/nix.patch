@@ -1,16 +1,3 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d9a4788..fef3e1a 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -30,6 +30,8 @@ set(SRC_FILES src/apiset.cpp
-     src/mem.cpp
-     src/menu.cpp
-     src/misc.cpp
-+    src/compat.cpp
-+    src/setjmp.S
-     src/peload.cpp
-     src/reg.cpp
-     src/tinymt32.cpp
 diff --git a/src/print.cpp b/src/print.cpp
 index f105ca5..f0de5f7 100644
 --- a/src/print.cpp
