@@ -32,14 +32,9 @@ lastbook.overrideAttrs (old: {
   # server.py and app/tests/test_setup.py, and does not apply cleanly under
   # stdenv (a web/map.js hunk mismatches and leaves map.js.orig behind). What
   # this variant applies is therefore our own rebase onto the release tag, which
-  # is exactly the case AGENTS.md keeps as a local file. The rest of the PR #38
-  # story is in the header comment above.
+  # is exactly the case AGENTS.md keeps as a local file.
   patches = (old.patches or [ ]) ++ [
     ./0001-australian-capital-and-state-territory-maps.patch
-    ./0002-review-download-hosts.patch
-    ./0003-continue-without-enough-room.patch
-  ];
-    })
     ./0002-review-download-hosts.patch
     ./0003-continue-without-enough-room.patch
   ];
