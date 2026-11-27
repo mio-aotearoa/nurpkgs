@@ -24,29 +24,25 @@ let
           // (
             let
               subdir = ./by-name + "/${dir}";
+              subdirEntries = builtins.readDir subdir;
             in
             builtins.listToAttrs (
-              map
-                (
-                  name:
-                  let
-                    packagePath = subdir + "/${name}/package.nix";
-                    packageArgs =
-                      if builtins.hasAttr "inputs" (builtins.functionArgs (import packagePath)) then
-                        { inherit inputs; }
-                      else
-                        { };
-                  in
-                  {
-                    inherit name;
-                    value = self.callPackage packagePath packageArgs;
-                  }
-                )
-                (
-                  builtins.filter (name: (builtins.readDir subdir).${name} == "directory") (
-                    builtins.attrNames (builtins.readDir subdir)
-                  )
-                )
+              map (
+                name:
+                let
+                  packagePath = subdir + "/${name}/package.nix";
+                  packageFunction = import packagePath;
+                  packageArgs =
+                    if builtins.hasAttr "inputs" (builtins.functionArgs packageFunction) then
+                      { inherit inputs; }
+                    else
+                      { };
+                in
+                {
+                  inherit name;
+                  value = self.callPackage packageFunction packageArgs;
+                }
+              ) (builtins.filter (name: subdirEntries.${name} == "directory") (builtins.attrNames subdirEntries))
             )
           )
         else
