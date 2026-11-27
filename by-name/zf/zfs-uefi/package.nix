@@ -105,9 +105,11 @@ mingw.stdenv.mkDerivation {
 
       The pool must stay inside FreeBSD's read-only feature set (create it with
       a `compatibility=` that keeps to it), and compression is limited to lz4,
-      lzjb, zle and none.  Encrypted datasets are not readable yet: the key
-      store is implemented (a raw keyfile is unwrapped and MAC-verified while
-      the dataset is opened), but block decryption is not, so the reader still
+      lzjb, zle and none.  Encrypted datasets are not readable yet.  The driver
+      prompts on the firmware console for the passphrase (or a hex/raw key)
+      while opening one, derives the wrapping key the way `zfs` does, and
+      unwraps and MAC-verifies the dataset key; a wrong entry is re-prompted.
+      Decrypting the dataset's blocks is not implemented, so the reader still
       reports that instead of failing the block's checksum.  `GetArcName` is not
       implemented, so `freeldr.ini` keeps the ordinary `multi(...)partition(N)`
       form, and `OpenZFS.sys` must be a boot-start driver in the guest.
