@@ -234,3 +234,15 @@ the exact status, compare `SizeOfOptionalHeader`/`NumberOfRvaAndSizes`/data dire
 against the release binary, and try `-Wl,--image-base,0` or an older binutils.
 
 <!-- qemu-crash:end -->
+
+<!-- pe-layout:start -->
+### PE layout comparison (ours vs upstream release)
+
+```
+Traceback (most recent call last):
+  File "<stdin>", line 46, in <module>
+  File "<stdin>", line 33, in parse
+struct.error: unpack_from requires a buffer of at least 1843648 bytes for unpacking 2 bytes at offset 1843646 (actual buffer size is 1843647)
+```
+
+<!-- pe-layout:end -->
