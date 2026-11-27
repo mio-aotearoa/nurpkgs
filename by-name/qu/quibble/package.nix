@@ -52,11 +52,13 @@ mingw.stdenv.mkDerivation {
     cp ${./setjmp.S} src/setjmp.S
   '';
 
+  # Upstream's own preset, with the freestanding link flags added.  libgcc is the
+  # only runtime library linked; everything else comes from compat.cpp/setjmp.S.
   cmakeFlags = [
-    "-DCMAKE_TOOLCHAIN_FILE=../mingw-amd64.cmake"
+    "-DCMAKE_TOOLCHAIN_FILE=${./toolchain.cmake}"
     "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
-    "-DCMAKE_C_STANDARD_LIBRARIES="
-    "-DCMAKE_CXX_STANDARD_LIBRARIES="
+    "-DCMAKE_C_STANDARD_LIBRARIES=-lgcc"
+    "-DCMAKE_CXX_STANDARD_LIBRARIES=-lgcc"
   ];
 
   installPhase = ''
