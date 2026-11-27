@@ -6,6 +6,8 @@
     config.android_sdk.accept_license = true;
   },
   no-ifd ? true,
+  claudeDesktopSrc ? null,
+  kytyps5NixpkgsSrc ? null,
 }:
 with (import ./private.nix { inherit pkgs; });
 let
@@ -28,7 +30,14 @@ let
               map
                 (name: {
                   inherit name;
-                  value = self.callPackage (subdir + "/${name}/package.nix") { };
+                  value = self.callPackage (subdir + "/${name}/package.nix") (
+                    if dir == "cl" && (name == "claude-desktop" || name == "claude-desktop-fhs") then
+                      { inherit claudeDesktopSrc; }
+                    else if dir == "ky" && name == "kytyps5" then
+                      { inherit kytyps5NixpkgsSrc; }
+                    else
+                      { }
+                  );
                 })
                 (
                   builtins.filter (name: (builtins.readDir subdir).${name} == "directory") (
@@ -43,6 +52,10 @@ let
     in
     flattened
     // {
+      inherit
+        claudeDesktopSrc
+        kytyps5NixpkgsSrc
+        ;
       nixpkgs_pkgs = pkgs;
       mkCutefishDerivation = self.callPackage ./pkgs/desktops/cutefish/mk.nix { };
       ocamlPackages =

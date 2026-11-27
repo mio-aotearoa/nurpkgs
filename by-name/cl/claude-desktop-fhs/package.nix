@@ -1,12 +1,11 @@
 {
   callPackage,
-  fetchFromGitHub,
+  claudeDesktopSrc,
   claude-desktop,
 }:
 
 let
-  upstream = import ../claude-desktop/upstream.nix { inherit fetchFromGitHub; };
-  fhs = callPackage (upstream + "/nix/fhs.nix") {
+  fhs = callPackage (claudeDesktopSrc + "/nix/fhs.nix") {
     inherit claude-desktop;
   };
 in

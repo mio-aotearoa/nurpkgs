@@ -13,11 +13,19 @@
     url = "github:Novavero-AI/nova-nix";
     flake = false;
   };
+  inputs.claude-desktop-src = {
+    url = "github:aaddrick/claude-desktop-debian/v3.3.20+claude6.28899.6";
+  };
+  inputs.kytyps5-nixpkgs = {
+    url = "github:NixOS/nixpkgs/94d362415787ffff528f73820996aeedd97ff0dd";
+  };
   outputs =
     {
       self,
       nixpkgs,
       nova-nix-src,
+      claude-desktop-src,
+      kytyps5-nixpkgs,
     }:
     let
       forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
@@ -43,6 +51,8 @@
               "python-2.7.18"
             ];
           };
+          claudeDesktopSrc = claude-desktop-src.outPath;
+          kytyps5NixpkgsSrc = kytyps5-nixpkgs.outPath;
           no-ifd = false;
         }
       );
@@ -96,6 +106,8 @@
               config.cudaSupport = true;
               inherit system;
             };
+            claudeDesktopSrc = claude-desktop-src.outPath;
+            kytyps5NixpkgsSrc = kytyps5-nixpkgs.outPath;
           };
         in
         ppp.cached-set
