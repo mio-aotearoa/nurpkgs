@@ -255,3 +255,31 @@ against the release binary, and try `-Wl,--image-base,0` or an older binutils.
 ```
 
 <!-- pe-layout:end -->
+
+<!-- qemu-status:start -->
+### Status correction: the #UD dumps came from broken instrumentation builds
+
+Booting the *unmodified* build (entry `0x14210`) on a fresh GPT/ESP image built with
+`parted` + `mkfs.vfat -F 32 -s 1` + `mcopy` produces **no exception at all**: firmware
+logs `BdsDxe: loading Boot0002 "UEFI QEMU HARDDISK"` and then falls back to
+`BootManagerMenuApp`, i.e. the image is loaded/rejected without ever crashing.
+
+Control on the *same* disk layout, only `BOOTX64.EFI` swapped for upstream's release
+binary: boots the quibble UI (1280x800, 5.49% non-black). So the ESP layout, the
+512-byte clusters, and the shipped `freeldr.ini`/`font.ttf` are all fine.
+
+The two images that produced the `#UD` dumps have `AddressOfEntryPoint = 0` — confirmed
+both in the file and in the loaded copy in guest RAM, where the loader had already
+rewritten `ImageBase` to `0x7dd49000`. They came from my earlier ad-hoc instrumentation
+builds, so the "crash at image base + 0xC" is an artifact of those images, not evidence
+about quibble. Header comparison with the release binary shows nothing invalid either:
+
+```
+ours:     entry=0x14210 nsec=10 sizeimage=0x179000 sizeofheaders=0x400 FileAlign=0x200 SectAlign=0x1000
+upstream: entry=0x0f0c7 nsec=9  sizeimage=0x100000 sizeofheaders=0x400 FileAlign=0x200 SectAlign=0x1000
+```
+
+Next: rebuild the COM1-marker instrumentation through `overrideAttrs` (entry stays
+`0x14210`), boot it, and read the `qstat` markers to see how far `efi_main` gets.
+
+<!-- qemu-status:end -->
