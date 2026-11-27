@@ -11,45 +11,28 @@
 with (import ./private.nix { inherit pkgs; });
 let
   nonurbot = x: if no-ifd then null else x;
-  callPackage = pkgs.callPackage;
   lib = pkgs.lib // import ./lib { inherit pkgs; };
-  byName = lib.makeScope pkgs.newScope (
+  newScope = scope: pkgs.newScope ({ inherit inputs; } // scope);
+  byName = lib.makeScope newScope (
     self:
     let
       readDir = builtins.readDir ./by-name;
-      flattened = builtins.foldl' (
-        acc: dir:
-        if builtins.stringLength dir == 2 && readDir.${dir} == "directory" then
-          acc
-          // (
-            let
-              subdir = ./by-name + "/${dir}";
-              subdirEntries = builtins.readDir subdir;
-            in
-            builtins.listToAttrs (
-              map (
-                name:
-                let
-                  packagePath = subdir + "/${name}/package.nix";
-                  packageFunction = import packagePath;
-                  packageArgs =
-                    if builtins.hasAttr "inputs" (builtins.functionArgs packageFunction) then
-                      { inherit inputs; }
-                    else
-                      { };
-                in
-                {
-                  inherit name;
-                  value = self.callPackage packageFunction packageArgs;
-                }
-              ) (builtins.filter (name: subdirEntries.${name} == "directory") (builtins.attrNames subdirEntries))
-            )
-          )
-        else
-          acc
-      ) { } (builtins.attrNames readDir);
+      packageFiles = builtins.listToAttrs (
+        builtins.concatLists (
+          map (
+            dir:
+            if builtins.stringLength dir == 2 && readDir.${dir} == "directory" then
+              map (name: {
+                inherit name;
+                value = ./by-name + "/${dir}/${name}/package.nix";
+              }) (builtins.attrNames (builtins.readDir (./by-name + "/${dir}")))
+            else
+              [ ]
+          ) (builtins.attrNames readDir)
+        )
+      );
     in
-    flattened
+    (lib.mapAttrs (_: packagePath: self.callPackage packagePath { }) packageFiles)
     // {
       nixpkgs_pkgs = pkgs;
       mkCutefishDerivation = self.callPackage ./pkgs/desktops/cutefish/mk.nix { };
