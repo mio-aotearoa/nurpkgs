@@ -63,6 +63,9 @@ stuntrally.overrideAttrs (oldAttrs: {
         --replace-fail \
           'String( macBundlePath() + "/" + archName ), typeName, secName );' \
           '(archName[0] == 47 ? archName : String( macBundlePath() + "/" + archName )), typeName, secName );'
+      substituteInPlace src/common/AppGui_Compositor.cpp \
+        --replace-fail 'lens = edView ? 1 : pSet->g.lens_flare,' 'lens = false,' \
+        --replace-fail 'sunbeams = edView ? 1 : pSet->g.sunbeams,' 'sunbeams = false,'
     '';
   passthru = (oldAttrs.passthru or { }) // {
     mygui = mygui_patched;
