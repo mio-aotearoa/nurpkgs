@@ -66,6 +66,8 @@ stuntrally.overrideAttrs (oldAttrs: {
       substituteInPlace src/common/AppGui_Compositor.cpp \
         --replace-fail 'lens = edView ? 1 : pSet->g.lens_flare,' 'lens = false,' \
         --replace-fail 'sunbeams = edView ? 1 : pSet->g.sunbeams,' 'sunbeams = false,'
+      substituteInPlace src/common/CScene_Sky.cpp \
+        --replace-fail 'setForwardClustered(true' 'setForwardClustered(false'
       substituteInPlace data/Hlms/Pbs/Any/Main/200.Atmo_piece_all.any \
         --replace-fail 'constant AtmoSettings &atmo' 'constant SR3_AtmoSettings &atmo'
       substituteInPlace data/Hlms/Pbs/Any/Main/500.Structs_piece_vs_piece_ps.any \
