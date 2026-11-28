@@ -240,7 +240,6 @@ exportedByName
       ];
     });
 
-  # Wine app variants (bases live in by-name; mkWindowsAppNoCC is on-nur-search).
   # https://github.com/NixOS/nixpkgs/issues/10165
   # https://discourse.nixos.org/t/what-is-your-approach-to-packaging-wine-applications-with-nix-derivations/12799/1
   # Acrobat defaults to virtualDesktop=true (AUR: tab bar needs it).
