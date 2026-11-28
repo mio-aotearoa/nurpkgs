@@ -27,6 +27,9 @@
   nix-update-script,
   coreutils,
   gnused,
+  git,
+  jq,
+  nix,
   writeShellApplication,
 }:
 let
@@ -36,8 +39,8 @@ let
   assets = fetchFromGitHub {
     owner = "Pttn";
     repo = "stk-assets";
-    rev = "94a957db16f16d82409f6bfe9c1961d07d8a90e6";
-    hash = "sha256-BGhriCSGDg8n7MnYvzklJgB60VGBzqQGzYpWV76eKho=";
+    rev = "56b611c0fab2a9dabb57ed4a7db05a1fa6330730";
+    hash = "sha256-jk4FwuOm75BxqK6z1CcQ2loxL8Vc2MNcIyRLp+c5K1E=";
   };
 
   # List of bundled libraries in stk-code/lib to keep
@@ -163,7 +166,10 @@ stdenv.mkDerivation {
     name = "update-supertuxkart-evolution";
     runtimeInputs = [
       coreutils
+      git
       gnused
+      jq
+      nix
     ];
     text = ''
       export UPDATE_NIX_ATTR_PATH="supertuxkart-evolution"
@@ -178,6 +184,15 @@ stdenv.mkDerivation {
       # nix-update takes the base from upstream's newest release tag (`preview`);
       # keep the game's own base version instead.
       sed -i -E 's/^(  version = ")[^"]*-unstable-/\11.5-unstable-/' by-name/su/supertuxkart-evolution/package.nix
+
+      # Evolution assets: track Pttn/stk-assets main alongside the code.
+      file=by-name/su/supertuxkart-evolution/package.nix
+      assetsRev=$(git ls-remote https://github.com/Pttn/stk-assets refs/heads/main | cut -f1)
+      assetsHash=$(nix flake prefetch --json "github:Pttn/stk-assets/$assetsRev" | jq -r .hash)
+      sed -i -E "/repo = \"stk-assets\";/,/hash = / {
+        s|rev = \"[^\"]*\"|rev = \"$assetsRev\"|
+        s|hash = \"[^\"]*\"|hash = \"$assetsHash\"|
+      }" "$file"
     '';
   };
 
